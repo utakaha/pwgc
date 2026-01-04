@@ -25,23 +25,23 @@ $ pwgc -s
 => yiC(pUJRpGrgIvw,$NGx
 ```
 
-## Compile
-```bash
-make
-```
-
-## Test
-```bash
-make test
-```
-
 ## Installation
 Install to `/usr/local/bin`:
 ```bash
-sudo make install
+$ sudo make install
 ```
 
 Or install to user directory (no sudo required):
 ```bash
-make PREFIX=$HOME/.local install
+$ make PREFIX=$HOME/.local install
+```
+
+## Compile
+```bash
+$ make
+```
+
+## Test
+```bash
+$ make test
 ```
