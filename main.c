@@ -8,7 +8,7 @@ int main(void) {
   const char charset[] = "abcdefghijklmnopqrstuvwxyz"
                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                          "0123456789"
-                         "!@#$%^&*()-_=+[]{}|;:,.<>?/";
+                         "!@#$%^&*()-_=+[]{}.,?";
   int charset_size = sizeof(charset) - 1;
 
   int fd = open("/dev/urandom", O_RDONLY);
