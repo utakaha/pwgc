@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #define PASSWORD_DEFAULT_LENGTH 20
 
 int main(int argc, char *argv[]) {
   int password_length = PASSWORD_DEFAULT_LENGTH;
+  int numbers_only = 0;
 
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] == '-' && argv[i][1] == 'l') {
@@ -16,19 +18,31 @@ int main(int argc, char *argv[]) {
           fprintf(stderr, "Invalid password length. Must be between 1 and 100.\n");
           return 1;
         }
+        i++;
       } else {
         fprintf(stderr, "Option -l requires a length value.\n");
         return 1;
       }
+    } else if (argv[i][0] == '-' && argv[i][1] == 'n') {
+      numbers_only = 1;
+    } else {
+      fprintf(stderr, "Unknown option: %s\n", argv[i]);
+      return 1;
     }
   }
 
-  char password[101] = "password";
-  const char charset[] = "abcdefghijklmnopqrstuvwxyz"
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                         "0123456789"
-                         "!@#$%^&*()-_=+[]{}.,?";
-  int charset_size = sizeof(charset) - 1;
+  const char *lower = "abcdefghijklmnopqrstuvwxyz";
+  const char *upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const char *numbers = "0123456789";
+  const char *symbols = "!@#$%^&*()-_=+[]{}.,?";
+  char charset[256];
+  strcpy(charset, lower);
+  strcat(charset, upper);
+  strcat(charset, numbers);
+  if (!numbers_only) {
+    strcat(charset, symbols);
+  }
+  int charset_size = strlen(charset);
 
   int fd = open("/dev/urandom", O_RDONLY);
   if (fd < 0) {
@@ -43,6 +57,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  char password[101];
   for (int i = 0; i < password_length; i++) {
     // Modulo bias
     unsigned char limit = 256 - (256 % charset_size);
