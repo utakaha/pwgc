@@ -3,7 +3,26 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int main(void) {
+#define PASSWORD_DEFAULT_LENGTH 20
+
+int main(int argc, char *argv[]) {
+  int password_length = PASSWORD_DEFAULT_LENGTH;
+
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-' && argv[i][1] == 'l') {
+      if (i + 1 < argc) {
+        password_length = atoi(argv[i + 1]);
+        if (password_length <= 0 || password_length > 100) {
+          fprintf(stderr, "Invalid password length. Must be between 1 and 100.\n");
+          return 1;
+        }
+      } else {
+        fprintf(stderr, "Option -l requires a length value.\n");
+        return 1;
+      }
+    }
+  }
+
   char password[101] = "password";
   const char charset[] = "abcdefghijklmnopqrstuvwxyz"
                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -24,7 +43,7 @@ int main(void) {
     return 1;
   }
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < password_length; i++) {
     // Modulo bias
     unsigned char limit = 256 - (256 % charset_size);
     unsigned char value;
@@ -38,7 +57,7 @@ int main(void) {
     password[i] = charset[value % charset_size];
   }
   close(fd);
-  password[20] = '\0';
+  password[password_length] = '\0';
 
   printf("%s\n", password);
   return 0;
