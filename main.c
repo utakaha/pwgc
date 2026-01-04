@@ -20,16 +20,22 @@ void parse_args(int argc, char *argv[], int *password_length, int *numbers_only,
         fprintf(stderr, "Option -l requires a length value.\n");
         exit(1);
       }
-    } else if (argv[i][0] == '-' && argv[i][1] == 'n') {
+    } else if (argv[i][0] == '-' && argv[i][1] == 'n' && argv[i][2] == '\0') {
       *numbers_only = 1;
-    } else if (argv[i][0] == '-' && argv[i][1] == 's') {
+    } else if (argv[i][0] == '-' && argv[i][1] == 's' && argv[i][2] == '\0') {
       *symbols_only = 1;
-    } else if (argv[i][0] == '-' && argv[i][1] == 'a') {
+    } else if (argv[i][0] == '-' && argv[i][1] == 'a' && argv[i][2] == '\0') {
       *alphabet_only = 1;
     } else {
       fprintf(stderr, "Unknown option: %s\n", argv[i]);
       exit(1);
     }
+  }
+
+  int exclusive_options = *numbers_only + *symbols_only + *alphabet_only;
+  if (exclusive_options > 1) {
+    fprintf(stderr, "Error: Options -a, -s, and -n are mutually exclusive.\n");
+    exit(1);
   }
 }
 
@@ -44,20 +50,13 @@ void build_charset(char *charset, int numbers_only, int symbols_only, int alphab
 
   if (alphabet_only) {
     return;
-  }
-
-  if (!numbers_only && !symbols_only) {
+  } else if (symbols_only) {
+    strcat(charset, symbols);
+  } else if (numbers_only) {
+    strcat(charset, numbers);
+  } else {
     strcat(charset, numbers);
     strcat(charset, symbols);
-    return;
-  }
-
-  if (symbols_only) {
-    strcat(charset, symbols);
-  }
-  
-  if (numbers_only) {
-    strcat(charset, numbers);
   }
 }
 

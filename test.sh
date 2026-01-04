@@ -125,4 +125,28 @@ fi
 echo "PASS (rejected as expected)"
 echo ""
 
+echo "Mutually exclusive options (-a -n)"
+if ./pwgc -a -n 2>/dev/null; then
+    echo "FAIL: Should reject -a and -n together"
+    exit 1
+fi
+echo "PASS (rejected as expected)"
+echo ""
+
+echo "Mutually exclusive options (-a -s)"
+if ./pwgc -a -s 2>/dev/null; then
+    echo "FAIL: Should reject -a and -s together"
+    exit 1
+fi
+echo "PASS (rejected as expected)"
+echo ""
+
+echo "Mutually exclusive options (-n -s)"
+if ./pwgc -n -s 2>/dev/null; then
+    echo "FAIL: Should reject -n and -s together"
+    exit 1
+fi
+echo "PASS (rejected as expected)"
+echo ""
+
 echo "All tests passed"
