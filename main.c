@@ -75,7 +75,10 @@ void generate_password(char *password, int length, const char *charset, int char
     do {
       value = random_bytes[i];
       if (value >= limit) {
-        read(fd, &value, 1);
+        if (read(fd, &value, 1) != 1) {
+          perror("Failed to read random byte");
+          exit(1);
+        }
       }
     } while (value >= limit);
 
@@ -98,13 +101,6 @@ int main(int argc, char *argv[]) {
   int fd = open("/dev/urandom", O_RDONLY);
   if (fd < 0) {
     perror("Failed to open /dev/urandom");
-    return 1;
-  }
-
-  unsigned char random_bytes[100];
-  if (read(fd, random_bytes, sizeof(random_bytes)) != sizeof(random_bytes)) {
-    perror("Failed to read from /dev/urandom");
-    close(fd);
     return 1;
   }
 
