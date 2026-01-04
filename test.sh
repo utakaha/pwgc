@@ -64,4 +64,65 @@ fi
 echo "PASS (passwords are different)"
 echo ""
 
+echo "Numbers only mode (-n)"
+result=$(./pwgc -n)
+if echo "$result" | grep -qE '[^a-zA-Z0-9]'; then
+    echo "FAIL: -n option should not include symbols"
+    exit 1
+fi
+echo "PASS (no symbols found)"
+echo ""
+
+echo "Symbols only mode (-s)"
+result=$(./pwgc -s)
+if echo "$result" | grep -q '[0-9]'; then
+    echo "FAIL: -s option should not include numbers"
+    exit 1
+fi
+if ! echo "$result" | grep -qE '[^a-zA-Z]'; then
+    echo "FAIL: -s option should include symbols"
+    exit 1
+fi
+echo "PASS (no numbers, symbols included)"
+echo ""
+
+echo "Alphabetic only mode (-a)"
+result=$(./pwgc -a)
+if echo "$result" | grep -q '[0-9]'; then
+    echo "FAIL: -a option should not include numbers"
+    exit 1
+fi
+if echo "$result" | grep -qE '[^a-zA-Z]'; then
+    echo "FAIL: -a option should not include symbols"
+    exit 1
+fi
+if ! echo "$result" | grep -q '[a-zA-Z]'; then
+    echo "FAIL: -a option should include alphabetic characters"
+    exit 1
+fi
+echo "PASS (only alphabetic characters)"
+echo ""
+
+echo "Combined options (-a -l 25)"
+result=$(./pwgc -a -l 25)
+len=${#result}
+if [ $len -ne 25 ]; then
+    echo "FAIL: Expected length 25, got $len"
+    exit 1
+fi
+if echo "$result" | grep -qE '[^a-zA-Z]'; then
+    echo "FAIL: Should only contain alphabetic characters"
+    exit 1
+fi
+echo "PASS"
+echo ""
+
+echo "Invalid option (-aaa)"
+if ./pwgc -aaa 2>/dev/null; then
+    echo "FAIL: Should reject invalid option -aaa"
+    exit 1
+fi
+echo "PASS (rejected as expected)"
+echo ""
+
 echo "All tests passed"
