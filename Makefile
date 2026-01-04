@@ -28,4 +28,8 @@ uninstall:
 clean:
 	rm -f $(TARGET) $(OBJ)
 
+test: $(TARGET)
+	@chmod +x test.sh
+	@./test.sh
+
 .PHONY: all install uninstall clean test
