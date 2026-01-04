@@ -1,0 +1,7 @@
+pwgc
+*.o
+*.a
+*.so
+*.dSYM/
+*.out
+.DS_Store
