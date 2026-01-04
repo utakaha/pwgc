@@ -6,7 +6,7 @@
 
 #define PASSWORD_DEFAULT_LENGTH 20
 
-void parse_args(int argc, char *argv[], int *password_length, int *numbers_only, int *symbols_only) {
+void parse_args(int argc, char *argv[], int *password_length, int *numbers_only, int *symbols_only, int *alphabet_only) {
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] == '-' && argv[i][1] == 'l') {
       if (i + 1 < argc) {
@@ -24,6 +24,8 @@ void parse_args(int argc, char *argv[], int *password_length, int *numbers_only,
       *numbers_only = 1;
     } else if (argv[i][0] == '-' && argv[i][1] == 's') {
       *symbols_only = 1;
+    } else if (argv[i][0] == '-' && argv[i][1] == 'a') {
+      *alphabet_only = 1;
     } else {
       fprintf(stderr, "Unknown option: %s\n", argv[i]);
       exit(1);
@@ -31,7 +33,7 @@ void parse_args(int argc, char *argv[], int *password_length, int *numbers_only,
   }
 }
 
-void build_charset(char *charset, int numbers_only, int symbols_only) {
+void build_charset(char *charset, int numbers_only, int symbols_only, int alphabet_only) {
   const char *lower = "abcdefghijklmnopqrstuvwxyz";
   const char *upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const char *numbers = "0123456789";
@@ -39,6 +41,10 @@ void build_charset(char *charset, int numbers_only, int symbols_only) {
 
   strcpy(charset, lower);
   strcat(charset, upper);
+
+  if (alphabet_only) {
+    return;
+  }
 
   if (!numbers_only && !symbols_only) {
     strcat(charset, numbers);
@@ -83,10 +89,11 @@ int main(int argc, char *argv[]) {
   int password_length = PASSWORD_DEFAULT_LENGTH;
   int numbers_only = 0;
   int symbols_only = 0;
-  parse_args(argc, argv, &password_length, &numbers_only, &symbols_only);
+  int alphabet_only = 0;
+  parse_args(argc, argv, &password_length, &numbers_only, &symbols_only, &alphabet_only);
 
   char charset[256];
-  build_charset(charset, numbers_only, symbols_only);
+  build_charset(charset, numbers_only, symbols_only, alphabet_only);
   int charset_size = strlen(charset);
 
   int fd = open("/dev/urandom", O_RDONLY);
